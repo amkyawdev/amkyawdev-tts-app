@@ -51,6 +51,11 @@ jobs:
     name: Build APK and AAB
     needs: quality
     runs-on: ubuntu-latest
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -74,16 +79,11 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
-      # Optional production signing. Without these repository secrets the
-      # release build falls back to the debug signing config so CI still
-      # produces installable artifacts. Never commit a keystore.
+      # Production signing is enabled only when all four secrets are present.
+      # Otherwise the release build falls back to the debug key and the
+      # artifact is labelled test-signed. Never commit a keystore.
       - name: Decode optional release keystore
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        if: ${{ env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '' }}
         run: |
           set -euo pipefail
           echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
@@ -93,6 +93,14 @@ jobs:
             echo "ANDROID_KEY_ALIAS=$ANDROID_KEY_ALIAS"
             echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD"
           } >> "$GITHUB_ENV"
+
+      - name: Report signing mode
+        run: |
+          if [ -n "${ANDROID_KEYSTORE_FILE:-}" ]; then
+            echo "Signing mode: **release keystore**" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Signing mode: **debug/test key** (release signing secrets not configured)" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Build release APK
         run: flutter build apk --release
@@ -108,7 +116,7 @@ jobs:
       - name: Upload APK and AAB
         uses: actions/upload-artifact@v4
         with:
-          name: amkyawdev-tts-studio-android
+          name: amkyawdev-tts-studio-android-${{ env.ANDROID_KEYSTORE_FILE != '' && 'release-signed' || 'test-signed' }}
           path: |
             build/app/outputs/flutter-apk/app-release.apk
             build/app/outputs/bundle/release/app-release.aab
