@@ -31,9 +31,8 @@ class PiperModelStatus {
 }
 
 class PiperModelManager {
-  PiperModelManager({required StorageService storage, http.Client? httpClient})
-    : _storage = storage,
-      _http = httpClient ?? http.Client();
+  PiperModelManager(this._storage, {http.Client? httpClient})
+    : _http = httpClient ?? http.Client();
 
   final StorageService _storage;
   final http.Client _http;

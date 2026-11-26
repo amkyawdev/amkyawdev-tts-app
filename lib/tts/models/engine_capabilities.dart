@@ -71,30 +71,22 @@ enum EngineStatusKind { ready, needsSetup, needsApiKey, unsupported, error }
 class EngineStatus {
   const EngineStatus({required this.kind, required this.message, this.detail});
 
-  const EngineStatus.ready([String message = 'Ready'])
+  const EngineStatus.ready([this.message = 'Ready'])
     : kind = EngineStatusKind.ready,
-      message = message,
       detail = null;
 
-  const EngineStatus.needsSetup(String message, {String? detail})
-    : kind = EngineStatusKind.needsSetup,
-      message = message,
-      detail = detail;
+  const EngineStatus.needsSetup(this.message, {this.detail})
+    : kind = EngineStatusKind.needsSetup;
 
-  const EngineStatus.needsApiKey([String message = 'API key required'])
+  const EngineStatus.needsApiKey([this.message = 'API key required'])
     : kind = EngineStatusKind.needsApiKey,
-      message = message,
       detail = null;
 
-  const EngineStatus.unsupported(String message, {String? detail})
-    : kind = EngineStatusKind.unsupported,
-      message = message,
-      detail = detail;
+  const EngineStatus.unsupported(this.message, {this.detail})
+    : kind = EngineStatusKind.unsupported;
 
-  const EngineStatus.error(String message, {String? detail})
-    : kind = EngineStatusKind.error,
-      message = message,
-      detail = detail;
+  const EngineStatus.error(this.message, {this.detail})
+    : kind = EngineStatusKind.error;
 
   final EngineStatusKind kind;
   final String message;

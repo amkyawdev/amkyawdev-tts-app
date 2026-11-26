@@ -70,9 +70,7 @@ class HistoryEntry {
 /// SQLite-backed transcript history. API keys and other credentials are never
 /// written here.
 class HistoryRepository {
-  HistoryRepository({required DatabaseFactory factory, required String path})
-    : _factory = factory,
-      _path = path;
+  HistoryRepository(this._factory, this._path);
 
   static const String _databaseName = 'amkyaw_tts_studio.db';
   static const int _version = 1;
@@ -84,8 +82,8 @@ class HistoryRepository {
   static Future<HistoryRepository> openPlatform() async {
     final base = await getDatabasesPath();
     final repository = HistoryRepository(
-      factory: databaseFactory,
-      path: p.join(base, _databaseName),
+      databaseFactory,
+      p.join(base, _databaseName),
     );
     await repository.init();
     return repository;

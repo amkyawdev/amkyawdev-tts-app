@@ -17,11 +17,7 @@ import 'gemini_client.dart';
 import 'gemini_voices.dart';
 
 class GeminiTtsEngine implements TtsEngine {
-  GeminiTtsEngine({
-    required GeminiTtsClient client,
-    required SecureKeyStore secureKeys,
-  }) : _client = client,
-       _secureKeys = secureKeys;
+  GeminiTtsEngine(this._client, this._secureKeys);
 
   static const int maxChunkChars = 1500;
 

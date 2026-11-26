@@ -18,13 +18,8 @@ import 'vieneu_client.dart';
 /// Server adapter only. VieNeu's official inference stack is Python + ONNX
 /// Runtime / PyTorch; no verified Flutter on-device runtime is bundled.
 class VieNeuTtsEngine implements TtsEngine {
-  VieNeuTtsEngine({
-    required String baseUrl,
-    required SecureKeyStore secureKeys,
-    VieNeuTtsClient? client,
-  }) : _baseUrl = baseUrl,
-       _secureKeys = secureKeys,
-       _client = client ?? VieNeuTtsClient(baseUrl: baseUrl);
+  VieNeuTtsEngine(this._baseUrl, this._secureKeys, {VieNeuTtsClient? client})
+    : _client = client ?? VieNeuTtsClient(baseUrl: _baseUrl);
 
   static const int maxChunkChars = 2000;
 

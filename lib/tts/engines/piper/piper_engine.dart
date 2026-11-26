@@ -26,9 +26,7 @@ import 'piper_model_manager.dart';
 /// phoneme codepoints. Inference runs in a disposable isolate so the UI stays
 /// responsive and cancellation can kill the isolate.
 class PiperTtsEngine implements TtsEngine {
-  PiperTtsEngine({required PiperModelManager manager, required String modelId})
-    : _manager = manager,
-      _modelId = modelId;
+  PiperTtsEngine(this._manager, this._modelId);
 
   static const int maxChunkChars = 600;
   static String? _espeakDataDirCache;
@@ -181,8 +179,9 @@ class PiperTtsEngine implements TtsEngine {
             ),
           );
         } else if (type == 'done') {
-          if (!done.isCompleted)
+          if (!done.isCompleted) {
             done.complete(Map<String, Object?>.from(message));
+          }
         } else if (type == 'error') {
           if (!done.isCompleted) {
             done.completeError(
