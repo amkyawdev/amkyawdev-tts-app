@@ -174,6 +174,11 @@ constraint `^3.14.0`; Java 21 and Android 36 match `compileSdk`/`targetSdk`. The
 workflow does not pin `packages: tools`, so it is not affected by the removal of
 the legacy `tools` SDK package.
 
+The APK built for this commit is
+`amkyawdev-tts-studio-0.2.0-test-signed.apk` (335,453,049 bytes, SHA-256
+`f771d75278413aec296af1f49798d2f3d4a6134c8ef36ed7c5382c7eac3cc49d`,
+`CN=Android Debug` — test-signed, not production-signed).
+
 Signing: release builds use the four `ANDROID_KEYSTORE_*` secrets when present
 and otherwise fall back to the debug key (test-signed). No keystore or key is
 committed.
@@ -187,7 +192,7 @@ committed.
 | `dart format` | PASS |
 | `flutter analyze` | PASS (0 errors/warnings) |
 | `flutter test` | PASS (unit + widget tests, local HTTP download server) |
-| `flutter build apk --release` | see final report |
+| `flutter build apk --release` | PASS — 335,453,049 bytes, test-signed |
 | APK install on a phone | **NOT VERIFIED — no device or emulator available** |
 | Piper on-device inference | **NOT VERIFIED on a phone** |
 | GGUF translation on-device | **NOT VERIFIED on a phone** |
@@ -267,8 +272,8 @@ test/                          Unit, widget and local-HTTP tests
 - VieNeu has no offline runtime here; it remains an online adapter.
 - MP3 export is not implemented; exported audio is WAV (or CAF on iOS).
 - iOS was not built in this environment.
-- The GitHub Actions token available here is read-only, so this release could not
-  be pushed/published from the agent environment if GitHub rejects the push.
+- No GitHub Release or tag was published for 0.2.0: releasing is a separate,
+  explicit decision. The commit is on `main` and CI builds the APK.
 
 ---
 
