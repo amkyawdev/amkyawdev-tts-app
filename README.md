@@ -10,8 +10,24 @@ and subtitle translation**, never for speech.
 [![Android Build](https://github.com/amkyawdev/amkyawdev-tts-app/actions/workflows/android-building.yml/badge.svg?branch=main)](https://github.com/amkyawdev/amkyawdev-tts-app/actions/workflows/android-building.yml)
 ![Flutter](https://img.shields.io/badge/Flutter-3.50.1-02569B?logo=flutter)
 ![Version](https://img.shields.io/badge/app-0.2.0%2B2-orange)
+[![Latest release](https://img.shields.io/github/v/release/amkyawdev/amkyawdev-tts-app?label=release)](https://github.com/amkyawdev/amkyawdev-tts-app/releases/tag/v0.2.0)
 
 ---
+
+## Download v0.2.0
+
+| | |
+| --- | --- |
+| **Release** | <https://github.com/amkyawdev/amkyawdev-tts-app/releases/tag/v0.2.0> |
+| **APK** | [app-release.apk](https://github.com/amkyawdev/amkyawdev-tts-app/releases/download/v0.2.0/app-release.apk) — 335,469,433 bytes, SHA-256 `df9a7ea22069bbb45580cf79a03670e9cf4cc77015b738e0de881f5862c302be` |
+| **AAB** | [app-release.aab](https://github.com/amkyawdev/amkyawdev-tts-app/releases/download/v0.2.0/app-release.aab) — 269,453,864 bytes, SHA-256 `fd6f956f0fecedb6181db6277375eb798f1572f9aef158cf1218474c3f5456d5` |
+| **Package** | `dev.amkyaw.amkyaw_tts_studio` · version 0.2.0 (versionCode 2) |
+| **Signing** | **TEST-SIGNED** with the Android debug key — not a production build |
+| **CI run** | <https://github.com/amkyawdev/amkyawdev-tts-app/actions/runs/45826343466> (format, analyze, tests, APK+AAB, release) |
+
+The APK is 335 MB because it contains the Flutter engine plus native libraries
+for three ABIs: sherpa-onnx/ONNX Runtime, piper-phonemize and llama.cpp
+(llamadart). No model file is bundled.
 
 ## What changed in 0.2.0
 
