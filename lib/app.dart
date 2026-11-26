@@ -3,10 +3,10 @@ import 'package:material_ui/material_ui.dart';
 
 import 'core/theme/app_theme.dart';
 import 'features/history/history_screen.dart';
-import 'features/hub/hub_screen.dart';
 import 'features/models/models_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/studio/studio_screen.dart';
+import 'features/translate/translate_screen.dart';
 import 'providers/app_providers.dart';
 
 class AmkyawApp extends ConsumerWidget {
@@ -38,9 +38,9 @@ class _AppShellState extends State<AppShell> {
 
   static const _screens = [
     StudioScreen(),
+    TranslateScreen(),
     HistoryScreen(),
     ModelsScreen(),
-    HubScreen(),
     SettingsScreen(),
   ];
 
@@ -147,6 +147,41 @@ class StatusDot extends StatelessWidget {
         boxShadow: [
           BoxShadow(color: color.withValues(alpha: 0.45), blurRadius: 8),
         ],
+      ),
+    );
+  }
+}
+
+/// In-app brand mark rendered from the canonical icon source.
+///
+/// Falls back to a vector glyph when the asset is unavailable so a missing
+/// asset can never break a screen.
+class BrandMark extends StatelessWidget {
+  const BrandMark({super.key, this.size = 28});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(size * 0.26);
+    return ClipRRect(
+      borderRadius: radius,
+      child: Image.asset(
+        'assets/branding/icon_256.png',
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        semanticLabel: 'AmkyawDev TTS Studio',
+        errorBuilder: (context, error, stackTrace) => Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            color: AppColors.crimsonDim,
+          ),
+          child: Icon(Icons.graphic_eq, size: size * 0.6, color: Colors.white),
+        ),
       ),
     );
   }

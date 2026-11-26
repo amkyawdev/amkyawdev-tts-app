@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:uuid/uuid.dart';
@@ -23,7 +24,10 @@ import '../tts/models/engine_capabilities.dart';
 import '../tts/models/engine_id.dart';
 import '../tts/models/generation_progress.dart';
 import '../tts/models/synthesis.dart';
+import '../tts/models/tts_language.dart';
 import '../tts/models/tts_voice.dart';
+import '../tts/tts_engine.dart';
+import '../tts/voices/voice_catalog.dart';
 
 final depsProvider = Provider<AppDependencies>(
   (ref) => throw UnimplementedError('AppDependencies must be overridden'),
@@ -45,13 +49,27 @@ class SettingsController extends Notifier<AppSettings> {
 
 final engineRegistryProvider = Provider<EngineRegistry>((ref) {
   final deps = ref.read(depsProvider);
-  final settings = ref.watch(settingsProvider);
-  return EngineRegistry([
-    PiperTtsEngine(deps.piperModels, settings.piperModelId),
+  // Only these two settings change how an engine is constructed. Watching the
+  // whole settings object would recreate every engine when the user merely
+  // picks a voice or a language.
+  final piperModelId = ref.watch(
+    settingsProvider.select((settings) => settings.piperModelId),
+  );
+  final vieneuBaseUrl = ref.watch(
+    settingsProvider.select((settings) => settings.vieneuBaseUrl),
+  );
+  final engines = <TtsEngine>[
+    PiperTtsEngine(deps.piperModels, piperModelId),
     GeminiTtsEngine(deps.geminiClient, deps.secureKeys),
-    VieNeuTtsEngine(settings.vieneuBaseUrl, deps.secureKeys),
+    VieNeuTtsEngine(vieneuBaseUrl, deps.secureKeys),
     SystemTtsEngine(),
-  ]);
+  ];
+  ref.onDispose(() {
+    for (final engine in engines) {
+      unawaited(engine.dispose().catchError((Object _) {}));
+    }
+  });
+  return EngineRegistry(engines);
 });
 
 class StudioState {
@@ -60,18 +78,23 @@ class StudioState {
     required this.engineId,
     required this.voiceId,
     required this.speed,
+    this.languageCode = '',
     this.generating = false,
     this.progress,
     this.result,
     this.error,
     this.statuses = const {},
     this.voices = const [],
-    this.loadingVoices = false,
+    this.loadingVoices = true,
+    this.voicesError,
   });
 
   final String text;
   final TtsEngineId engineId;
   final String voiceId;
+
+  /// Language the picker is filtered by; always derived from real voice metadata.
+  final String languageCode;
   final double speed;
   final bool generating;
   final GenerationProgress? progress;
@@ -81,10 +104,21 @@ class StudioState {
   final List<TtsVoice> voices;
   final bool loadingVoices;
 
+  /// Non-null when the engine failed to enumerate voices. Shown instead of a
+  /// silent "no voices" state.
+  final String? voicesError;
+
+  VoiceCatalog get catalog => VoiceCatalog(voices);
+
+  LanguageOption? get selectedLanguage => catalog.optionForCode(languageCode);
+
+  List<TtsVoice> get visibleVoices => catalog.voicesForCode(languageCode);
+
   StudioState copyWith({
     String? text,
     TtsEngineId? engineId,
     String? voiceId,
+    String? languageCode,
     double? speed,
     bool? generating,
     GenerationProgress? progress,
@@ -93,6 +127,8 @@ class StudioState {
     Map<TtsEngineId, EngineStatus>? statuses,
     List<TtsVoice>? voices,
     bool? loadingVoices,
+    String? voicesError,
+    bool clearVoicesError = false,
     bool clearError = false,
     bool clearProgress = false,
     bool clearResult = false,
@@ -101,6 +137,7 @@ class StudioState {
       text: text ?? this.text,
       engineId: engineId ?? this.engineId,
       voiceId: voiceId ?? this.voiceId,
+      languageCode: languageCode ?? this.languageCode,
       speed: speed ?? this.speed,
       generating: generating ?? this.generating,
       progress: clearProgress ? null : (progress ?? this.progress),
@@ -109,6 +146,7 @@ class StudioState {
       statuses: statuses ?? this.statuses,
       voices: voices ?? this.voices,
       loadingVoices: loadingVoices ?? this.loadingVoices,
+      voicesError: clearVoicesError ? null : (voicesError ?? this.voicesError),
     );
   }
 }
@@ -117,13 +155,22 @@ final studioProvider = NotifierProvider<StudioController, StudioState>(
   StudioController.new,
 );
 
+class _VoiceLoadResult {
+  const _VoiceLoadResult(this.voices, this.error);
+
+  final List<TtsVoice> voices;
+  final String? error;
+}
+
 class StudioController extends Notifier<StudioState> {
   CancellationToken? _token;
 
   @override
   StudioState build() {
     final settings = ref.read(settingsProvider);
-    Future.microtask(_refresh);
+    Future.microtask(() {
+      if (ref.mounted) _refresh();
+    });
     ref.onDispose(() => _token?.cancel());
     return StudioState(
       text: '',
@@ -143,27 +190,59 @@ class StudioController extends Notifier<StudioState> {
         statuses[engine.descriptor.id] = EngineStatus.error('$error');
       }
     }
-    final voices = await _voicesFor(state.engineId);
     if (!ref.mounted) return;
-    final voiceId = voices.any((voice) => voice.id == state.voiceId)
-        ? state.voiceId
-        : voices.isNotEmpty
-        ? voices.first.id
-        : '';
+    final engineId = state.engineId;
     state = state.copyWith(
       statuses: statuses,
-      voices: voices,
-      voiceId: voiceId,
-      loadingVoices: false,
+      loadingVoices: state.voices.isEmpty,
     );
+    final result = await _voicesFor(engineId);
+    if (!ref.mounted || state.engineId != engineId) return;
+    _applyVoices(result);
   }
 
-  Future<List<TtsVoice>> _voicesFor(TtsEngineId id) async {
+  Future<_VoiceLoadResult> _voicesFor(TtsEngineId id) async {
     try {
-      return await ref.read(engineRegistryProvider).byId(id).voices();
-    } catch (_) {
-      return const [];
+      final voices = await ref.read(engineRegistryProvider).byId(id).voices();
+      return _VoiceLoadResult(voices, null);
+    } on AppException catch (error) {
+      return _VoiceLoadResult(const [], error.message);
+    } catch (error) {
+      return _VoiceLoadResult(const [], 'Could not load voices: $error');
     }
+  }
+
+  /// Rebuilds language/voice state from the voices an engine actually reported.
+  void _applyVoices(_VoiceLoadResult result, {String? preferredLanguage}) {
+    final catalog = VoiceCatalog(result.voices);
+    if (catalog.isEmpty) {
+      state = state.copyWith(
+        voices: const [],
+        voiceId: '',
+        languageCode: '',
+        loadingVoices: false,
+        voicesError:
+            result.error ??
+            'This engine reported no voices. Check its setup in Settings.',
+      );
+      return;
+    }
+    final code =
+        preferredLanguage ??
+        catalog.optionForCode(state.languageCode)?.language.code ??
+        catalog.codeForVoice(state.voiceId) ??
+        catalog.options.first.language.code;
+    final voiceId = catalog.resolveVoiceSelection(
+      code: code,
+      preferredVoiceId: state.voiceId,
+    );
+    state = state.copyWith(
+      voices: result.voices,
+      voiceId: voiceId,
+      languageCode: code,
+      loadingVoices: false,
+      clearVoicesError: true,
+    );
   }
 
   void setText(String text) => state = state.copyWith(text: text);
@@ -171,30 +250,103 @@ class StudioController extends Notifier<StudioState> {
   void setSpeed(double speed) => state = state.copyWith(speed: speed);
 
   Future<void> selectEngine(TtsEngineId id) async {
+    if (state.engineId == id && state.voices.isNotEmpty) return;
+    _token?.cancel();
     final settings = ref.read(settingsProvider);
     state = state.copyWith(
       engineId: id,
       voiceId: settings.voiceFor(id),
+      languageCode: '',
       voices: const [],
       loadingVoices: true,
+      clearVoicesError: true,
       clearError: true,
       clearResult: true,
       clearProgress: true,
+      generating: false,
     );
-    final voices = await _voicesFor(id);
-    if (!ref.mounted) return;
+    unawaited(_persistEngine(id));
+    final result = await _voicesFor(id);
+    if (!ref.mounted || state.engineId != id) return;
+    _applyVoices(result);
+    final preferences = ref.read(settingsProvider);
+    final preferred = preferences.voiceFor(id);
+    if (preferred.isEmpty) return;
+    final catalog = VoiceCatalog(state.voices);
+    final option = catalog.optionForVoice(preferred);
+    if (option == null) return;
     state = state.copyWith(
-      voices: voices,
-      voiceId: voices.any((voice) => voice.id == state.voiceId)
-          ? state.voiceId
-          : voices.isNotEmpty
-          ? voices.first.id
-          : '',
-      loadingVoices: false,
+      languageCode: option.language.code,
+      voiceId: catalog.resolveVoiceSelection(
+        code: option.language.code,
+        preferredVoiceId: preferred,
+      ),
     );
   }
 
-  void selectVoice(String voiceId) => state = state.copyWith(voiceId: voiceId);
+  /// Filters the voice list to [code] and keeps a valid voice selected.
+  void selectLanguage(String code) {
+    final catalog = VoiceCatalog(state.voices);
+    final option = catalog.optionForCode(code);
+    if (option == null) return;
+    final voiceId = catalog.resolveVoiceSelection(
+      code: option.language.code,
+      preferredVoiceId: state.voiceId,
+    );
+    state = state.copyWith(
+      languageCode: option.language.code,
+      voiceId: voiceId,
+    );
+    _rememberLanguage(option.language.code);
+    if (voiceId.isNotEmpty) unawaited(_persistVoice(state.engineId, voiceId));
+  }
+
+  void selectVoice(String voiceId) {
+    final catalog = VoiceCatalog(state.voices);
+    final option = catalog.optionForVoice(voiceId);
+    state = state.copyWith(
+      voiceId: voiceId,
+      languageCode: option?.language.code ?? state.languageCode,
+    );
+    if (option != null) _rememberLanguage(option.language.code);
+    unawaited(_persistVoice(state.engineId, voiceId));
+  }
+
+  void _rememberLanguage(String code) {
+    final normalized = normalizeLanguageCode(code);
+    if (normalized.isEmpty || normalized == 'und') return;
+    final settings = ref.read(settingsProvider);
+    final recent = [
+      normalized,
+      ...settings.recentLanguageCodes.where((item) => item != normalized),
+    ].take(6).toList(growable: false);
+    if (listEquals(recent, settings.recentLanguageCodes)) return;
+    unawaited(
+      ref
+          .read(settingsProvider.notifier)
+          .update(settings.copyWith(recentLanguageCodes: recent)),
+    );
+  }
+
+  Future<void> _persistEngine(TtsEngineId id) async {
+    final settings = ref.read(settingsProvider);
+    if (settings.defaultEngine == id) return;
+    await ref
+        .read(settingsProvider.notifier)
+        .update(settings.copyWith(defaultEngine: id));
+  }
+
+  Future<void> _persistVoice(TtsEngineId engineId, String voiceId) async {
+    final settings = ref.read(settingsProvider);
+    if (settings.voiceFor(engineId) == voiceId) return;
+    await ref
+        .read(settingsProvider.notifier)
+        .update(
+          settings.copyWith(
+            defaultVoiceIds: {...settings.defaultVoiceIds, engineId: voiceId},
+          ),
+        );
+  }
 
   Future<void> refresh() => _refresh();
 
@@ -209,9 +361,21 @@ class StudioController extends Notifier<StudioState> {
       state = state.copyWith(error: 'Enter some text first.');
       return;
     }
+    final engineId = state.engineId;
+    final voiceId = state.voiceId;
+    final speed = state.speed;
+    if (voiceId.isEmpty) {
+      state = state.copyWith(
+        error:
+            'This engine has no selectable voice yet. '
+            'Check its setup and try again.',
+      );
+      return;
+    }
     final registry = ref.read(engineRegistryProvider);
-    final engine = registry.byId(state.engineId);
+    final engine = registry.byId(engineId);
     final status = await engine.status();
+    if (!ref.mounted) return;
     if (!status.isReady) {
       state = state.copyWith(
         error: status.detail == null
@@ -236,23 +400,27 @@ class StudioController extends Notifier<StudioState> {
     try {
       final outputPath = await deps.storage.newAudioPath(AudioFormat.wav);
       final result = await engine.synthesize(
-        request: SynthesisRequest(
-          text: text,
-          voiceId: state.voiceId,
-          speed: state.speed,
-        ),
+        request: SynthesisRequest(text: text, voiceId: voiceId, speed: speed),
         outputPath: outputPath,
         cancel: token,
         onProgress: (progress) {
           if (ref.mounted) state = state.copyWith(progress: progress);
         },
       );
+      final audio = await File(result.audioPath).length();
+      if (audio <= 44) {
+        throw const AppException(
+          AppErrorKind.malformedResponse,
+          'The engine returned an empty audio file.',
+          detail: 'Nothing to play or save. Try a different voice or engine.',
+        );
+      }
       await deps.historyRepository.insert(
         HistoryEntry(
           id: const Uuid().v4(),
           text: text,
-          engineId: state.engineId,
-          voiceId: result.voiceId,
+          engineId: engineId,
+          voiceId: result.voiceId.isEmpty ? voiceId : result.voiceId,
           createdAt: DateTime.now(),
           audioPath: result.audioPath,
           durationMs: result.duration.inMilliseconds,
@@ -292,6 +460,8 @@ class StudioController extends Notifier<StudioState> {
           error: 'Generation failed: $error',
         );
       }
+    } finally {
+      if (_token == token) _token = null;
     }
   }
 }

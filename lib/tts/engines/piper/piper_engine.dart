@@ -37,6 +37,15 @@ class PiperTtsEngine implements TtsEngine {
 
   PiperModelManifest? get _manifest => piperModelById(_modelId);
 
+  /// espeak-ng voice used by the phonemizer. Only English manifests are in the
+  /// catalogue, so anything else is refused instead of being phonemised as
+  /// English and producing wrong-sounding audio.
+  static String? _phonemeVoiceFor(String language) {
+    final normalized = language.toLowerCase().replaceAll('_', '-');
+    if (normalized.startsWith('en')) return 'en-us';
+    return null;
+  }
+
   @override
   EngineDescriptor get descriptor => const EngineDescriptor(
     id: TtsEngineId.piper,
@@ -87,6 +96,7 @@ class PiperTtsEngine implements TtsEngine {
   Future<List<TtsVoice>> voices() async {
     final manifest = _manifest;
     if (manifest == null) return const [];
+    if (_phonemeVoiceFor(manifest.language) == null) return const [];
     return [
       TtsVoice(
         id: 'lessac',
@@ -142,6 +152,15 @@ class PiperTtsEngine implements TtsEngine {
       throw const AppException(
         AppErrorKind.invalidRequest,
         'Enter some text to synthesize.',
+      );
+    }
+    final phonemeVoice = _phonemeVoiceFor(manifest.language);
+    if (phonemeVoice == null) {
+      throw AppException(
+        AppErrorKind.unsupported,
+        'This Piper model (${manifest.language}) has no verified phonemizer '
+        'mapping in this build.',
+        detail: 'The bundled Piper catalogue is English only.',
       );
     }
 
@@ -202,6 +221,7 @@ class PiperTtsEngine implements TtsEngine {
         'text': request.text,
         'outputPath': outputPath,
         'speed': request.speed,
+        'phonemeVoice': phonemeVoice,
         'maxChars': maxChunkChars,
         'send': receive.sendPort,
       };
@@ -283,7 +303,7 @@ Future<void> _piperEntry(Map<String, Object> args) async {
     for (var i = 0; i < chunks.length; i++) {
       final sentences = piper.PiperPhonemize.phonemize(
         chunks[i],
-        voice: 'en-us',
+        voice: args['phonemeVoice']! as String,
       ).where((sentence) => sentence.isNotEmpty).toList(growable: false);
       if (sentences.isEmpty) continue;
       final audio = tts.generateWithConfig(

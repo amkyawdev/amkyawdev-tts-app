@@ -8,7 +8,9 @@ import '../../providers/app_providers.dart';
 import '../../tts/models/engine_capabilities.dart';
 import '../../tts/models/engine_id.dart';
 import '../../tts/models/synthesis.dart';
+import '../../tts/voices/voice_catalog.dart';
 import '../player/player_panel.dart';
+import 'language_picker_sheet.dart';
 
 class StudioScreen extends ConsumerStatefulWidget {
   const StudioScreen({super.key});
@@ -138,6 +140,13 @@ class _StudioScreenState extends ConsumerState<StudioScreen> {
                 ),
               ),
             ),
+            if (state.voicesError != null) ...[
+              const SizedBox(height: 14),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _ErrorBanner(message: state.voicesError!),
+              ),
+            ],
             const SizedBox(height: 14),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -146,6 +155,14 @@ class _StudioScreenState extends ConsumerState<StudioScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
+                      _LanguageField(
+                        option: state.catalog.optionForCode(state.languageCode),
+                        loading: state.loadingVoices,
+                        onTap: state.loadingVoices || state.voices.isEmpty
+                            ? null
+                            : _pickLanguage,
+                      ),
+                      const SizedBox(height: 12),
                       Row(
                         children: [
                           Expanded(
@@ -158,7 +175,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen> {
                                 child: DropdownButton<String>(
                                   isExpanded: true,
                                   value:
-                                      state.voices.any(
+                                      state.visibleVoices.any(
                                         (voice) => voice.id == state.voiceId,
                                       )
                                       ? state.voiceId
@@ -166,20 +183,25 @@ class _StudioScreenState extends ConsumerState<StudioScreen> {
                                   hint: Text(
                                     state.loadingVoices
                                         ? 'Loading voices…'
-                                        : 'No voices available',
+                                        : 'No voices for this language',
                                   ),
-                                  items: state.voices
+                                  items: state.visibleVoices
                                       .map(
                                         (voice) => DropdownMenuItem(
                                           value: voice.id,
                                           child: Text(
-                                            '${voice.name} · ${voice.languageCode}',
+                                            voice.description == null
+                                                ? voice.name
+                                                : '${voice.name} · ${voice.description}',
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       )
                                       .toList(),
-                                  onChanged: state.loadingVoices
+                                  onChanged:
+                                      state.loadingVoices ||
+                                          state.generating ||
+                                          state.visibleVoices.isEmpty
                                       ? null
                                       : (value) {
                                           if (value != null) {
@@ -202,7 +224,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen> {
                               border: Border.all(color: AppColors.border),
                             ),
                             child: Text(
-                              '${state.speed.toStringAsFixed(1)}×',
+                              '${state.speed.toStringAsFixed(1)}x',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                               ),
@@ -235,6 +257,7 @@ class _StudioScreenState extends ConsumerState<StudioScreen> {
                 ),
               ),
             ),
+
             if (state.error != null) ...[
               const SizedBox(height: 14),
               Padding(
@@ -310,6 +333,20 @@ class _StudioScreenState extends ConsumerState<StudioScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _pickLanguage() async {
+    final state = ref.read(studioProvider);
+    final options = state.catalog.options;
+    if (options.isEmpty) return;
+    final code = await showLanguagePickerSheet(
+      context,
+      options: options,
+      selectedCode: state.languageCode,
+      recentCodes: ref.read(settingsProvider).recentLanguageCodes,
+    );
+    if (code == null || !mounted) return;
+    ref.read(studioProvider.notifier).selectLanguage(code);
   }
 
   String _engineHint(TtsEngineId id) {
@@ -574,6 +611,82 @@ class _RecentList extends ConsumerWidget {
           }).toList(),
         );
       },
+    );
+  }
+}
+
+class _LanguageField extends StatelessWidget {
+  const _LanguageField({
+    required this.option,
+    required this.loading,
+    required this.onTap,
+  });
+
+  final LanguageOption? option;
+  final bool loading;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final language = option?.language;
+    final title = loading
+        ? 'Loading languages…'
+        : language?.label ?? 'No language available';
+    final detail = language == null
+        ? 'This engine reported no voice metadata'
+        : '${language.code.toUpperCase()} · ${option!.voiceCount} '
+              '${option!.voiceCount == 1 ? 'voice' : 'voices'}';
+
+    return Semantics(
+      button: onTap != null,
+      label:
+          'Language. $title. $detail. '
+          '${onTap == null ? '' : 'Tap to search languages.'}',
+      excludeSemantics: true,
+      child: Material(
+        color: AppColors.surfaceHigh,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(
+              children: [
+                const Icon(Icons.translate, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'LANGUAGE',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          letterSpacing: 2.2,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      Text(detail, style: theme.textTheme.bodySmall),
+                    ],
+                  ),
+                ),
+                Icon(
+                  onTap == null ? Icons.lock_outline : Icons.expand_more,
+                  size: 20,
+                  color: theme.textTheme.bodySmall?.color,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

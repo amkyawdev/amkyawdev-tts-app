@@ -71,6 +71,7 @@ class SystemTtsEngine implements TtsEngine {
   @override
   Future<List<TtsVoice>> voices() async {
     await _ensureInitialized();
+    _voiceMaps.clear();
     try {
       final raw = await _tts.getVoices;
       final voices = <TtsVoice>[];

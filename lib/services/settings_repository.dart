@@ -37,6 +37,8 @@ class AppSettings {
     this.piperModelId = 'piper-en_US-lessac-medium-int8',
     this.vieneuBaseUrl = '',
     this.outputFormat = AudioFormat.wav,
+    this.recentLanguageCodes = const [],
+    this.translationModelId = 'qwen3-0.6b-q4km',
   });
 
   final ThemeMode themeMode;
@@ -48,6 +50,12 @@ class AppSettings {
   final String piperModelId;
   final String vieneuBaseUrl;
   final AudioFormat outputFormat;
+
+  /// Most recently used studio languages, newest first. Real usage only.
+  final List<String> recentLanguageCodes;
+
+  /// GGUF text model used for offline translation (never for speech).
+  final String translationModelId;
 
   String voiceFor(TtsEngineId engine) => defaultVoiceIds[engine] ?? '';
 
@@ -61,6 +69,8 @@ class AppSettings {
     String? piperModelId,
     String? vieneuBaseUrl,
     AudioFormat? outputFormat,
+    List<String>? recentLanguageCodes,
+    String? translationModelId,
   }) {
     return AppSettings(
       themeMode: themeMode ?? this.themeMode,
@@ -72,6 +82,8 @@ class AppSettings {
       piperModelId: piperModelId ?? this.piperModelId,
       vieneuBaseUrl: vieneuBaseUrl ?? this.vieneuBaseUrl,
       outputFormat: outputFormat ?? this.outputFormat,
+      recentLanguageCodes: recentLanguageCodes ?? this.recentLanguageCodes,
+      translationModelId: translationModelId ?? this.translationModelId,
     );
   }
 }
@@ -88,6 +100,8 @@ class SettingsRepository {
   static const String _vieneuUrlKey = 'settings.vieneu_base_url';
   static const String _outputKey = 'settings.output_format';
   static const String _voicePrefix = 'settings.voice.';
+  static const String _recentLanguagesKey = 'settings.recent_languages';
+  static const String _translationModelKey = 'settings.translation_model';
 
   final KeyValueStore _store;
 
@@ -118,6 +132,15 @@ class SettingsRepository {
       outputFormat:
           AudioFormat.fromExtension(_store.getString(_outputKey) ?? 'wav') ??
           AudioFormat.wav,
+      recentLanguageCodes: (_store.getString(_recentLanguagesKey) ?? '')
+          .split(',')
+          .map((code) => code.trim())
+          .where((code) => code.isNotEmpty)
+          .take(6)
+          .toList(growable: false),
+      translationModelId:
+          _store.getString(_translationModelKey) ??
+          const AppSettings().translationModelId,
     );
   }
 
@@ -130,6 +153,11 @@ class SettingsRepository {
     await _store.setString(_piperModelKey, settings.piperModelId);
     await _store.setString(_vieneuUrlKey, settings.vieneuBaseUrl.trim());
     await _store.setString(_outputKey, settings.outputFormat.extension);
+    await _store.setString(
+      _recentLanguagesKey,
+      settings.recentLanguageCodes.join(','),
+    );
+    await _store.setString(_translationModelKey, settings.translationModelId);
     for (final entry in settings.defaultVoiceIds.entries) {
       await _store.setString('$_voicePrefix${entry.key.id}', entry.value);
     }
