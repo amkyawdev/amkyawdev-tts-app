@@ -139,8 +139,19 @@ jobs:
           path: release-assets
           merge-multiple: true
 
-      - name: List release assets
-        run: ls -lh release-assets
+      # upload-artifact keeps the path relative to build/app/outputs, so the
+      # files arrive under flutter-apk/ and bundle/release/. Flatten them so the
+      # names attached to the release are stable.
+      - name: Flatten release assets
+        run: |
+          set -euo pipefail
+          apk="$(find release-assets -name 'app-release.apk' -print -quit)"
+          aab="$(find release-assets -name 'app-release.aab' -print -quit)"
+          test -n "$apk"
+          test -n "$aab"
+          cp "$apk" release-assets/app-release.apk
+          cp "$aab" release-assets/app-release.aab
+          ls -lh release-assets
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
