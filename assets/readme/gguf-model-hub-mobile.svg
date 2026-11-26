@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="1720" viewBox="0 0 820 1720" role="img" aria-labelledby="title desc">
+  <title id="title">Concept preview of the AmkyawDev TTS Studio Hugging Face GGUF Model Hub screen</title>
+  <desc id="desc">A dark navy glass phone mockup showing a Hugging Face repository URL, GGUF file discovery with quantization and sizes, compatibility states, a local GGUF import button and a safety note that GGUF is a container, not a runtime. This is an original concept illustration, not a screenshot.</desc>
+  <defs>
+    <linearGradient id="backdrop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#03060D"/>
+      <stop offset="0.55" stop-color="#050A14"/>
+      <stop offset="1" stop-color="#071426"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#070C16"/>
+      <stop offset="0.55" stop-color="#081120"/>
+      <stop offset="1" stop-color="#0A1626"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#41F0FF"/>
+      <stop offset="1" stop-color="#2F7BFF"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0C1726"/>
+      <stop offset="1" stop-color="#0A1220"/>
+    </linearGradient>
+    <linearGradient id="btn" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#41F0FF"/>
+      <stop offset="0.55" stop-color="#2FB6FF"/>
+      <stop offset="1" stop-color="#2F7BFF"/>
+    </linearGradient>
+    <radialGradient id="orb" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#2F7BFF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#2F7BFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#1B3550" stroke-width="1" opacity="0.16"/>
+    </pattern>
+  </defs>
+
+  <rect x="0" y="0" width="820" height="1720" rx="44" fill="url(#backdrop)"/>
+  <rect x="0" y="0" width="820" height="1720" rx="44" fill="url(#grid)"/>
+  <ellipse cx="410" cy="250" rx="340" ry="190" fill="url(#orb)"/>
+
+  <rect x="270" y="22" width="280" height="30" rx="15" fill="#07101C" stroke="#1B3550" stroke-dasharray="5 5"/>
+  <text x="410" y="42" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" letter-spacing="2.2" fill="#8EA4BF">CONCEPT PREVIEW · NOT A SCREENSHOT</text>
+
+  <rect x="70" y="66" width="680" height="1592" rx="58" fill="#02040A" stroke="#1B2C42" stroke-width="2"/>
+  <rect x="84" y="80" width="652" height="1564" rx="46" fill="url(#screen)" stroke="#16283D"/>
+
+  <rect x="338" y="98" width="144" height="24" rx="12" fill="#01030A"/>
+  <circle cx="466" cy="110" r="3.5" fill="#16283D"/>
+
+  <text x="122" y="112" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#F2F7FF">9:41</text>
+  <g fill="#8EA4BF">
+    <rect x="640" y="101" width="4" height="10" rx="1"/>
+    <rect x="647" y="98" width="4" height="13" rx="1"/>
+    <rect x="654" y="95" width="4" height="16" rx="1"/>
+    <rect x="661" y="92" width="4" height="19" rx="1"/>
+    <rect x="672" y="98" width="22" height="11" rx="3" fill="none" stroke="#8EA4BF" stroke-width="1.6"/>
+    <rect x="674" y="100" width="15" height="7" rx="1.5" fill="#46F0B0"/>
+    <rect x="695" y="101" width="2" height="5" rx="1"/>
+  </g>
+
+  <text x="122" y="164" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="4.4" fill="#41F0FF">AMKYAWDEV</text>
+  <text x="120" y="212" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="-1.2" fill="#F2F7FF">GGUF Model Hub</text>
+  <text x="122" y="240" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#8EA4BF">Hugging Face discovery · verified compatibility</text>
+  <circle cx="664" cy="190" r="24" fill="#0B1A2A" stroke="#1B3550"/>
+  <path d="M654 190h20M664 180v20" stroke="#41F0FF" stroke-width="2" stroke-linecap="round"/>
+
+  <rect x="116" y="264" width="588" height="96" rx="20" fill="url(#card)" stroke="#1B2C42"/>
+  <text x="140" y="290" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="2.4" fill="#6F88A6">HUGGING FACE REPO OR URL</text>
+  <rect x="136" y="302" width="416" height="42" rx="12" fill="#07111D" stroke="#16283D"/>
+  <circle cx="154" cy="323" r="7" fill="none" stroke="#6F88A6" stroke-width="1.8"/>
+  <path d="M159 328l5 5" stroke="#6F88A6" stroke-width="1.8" stroke-linecap="round"/>
+  <text x="172" y="328" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" fill="#EAF3FF">ggml-org/Qwen3-TTS-12Hz-1.7B-Base-GGUF</text>
+  <rect x="562" y="302" width="118" height="42" rx="12" fill="url(#btn)"/>
+  <text x="621" y="328" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="800" fill="#04121C">Inspect</text>
+
+  <rect x="122" y="378" width="112" height="24" rx="12" fill="#0B2233" stroke="#1B4A66"/>
+  <circle cx="137" cy="390" r="3.5" fill="#46F0B0"/>
+  <text x="147" y="394" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="700" letter-spacing="0.8" fill="#41F0FF">PUBLIC REPO</text>
+  <rect x="242" y="378" width="112" height="24" rx="12" fill="#0B1A2A" stroke="#1B3550"/>
+  <text x="298" y="394" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="700" letter-spacing="0.8" fill="#8EA4BF">NO TOKEN</text>
+  <rect x="362" y="378" width="140" height="24" rx="12" fill="#0B1A2A" stroke="#1B3550"/>
+  <text x="432" y="394" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="700" letter-spacing="0.8" fill="#8EA4BF">REVISION: MAIN</text>
+
+  <rect x="116" y="416" width="588" height="112" rx="20" fill="url(#card)" stroke="#1B2C42"/>
+  <text x="140" y="448" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" font-weight="800" fill="#F2F7FF">Qwen3-TTS 12Hz 1.7B</text>
+  <text x="140" y="470" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#8EA4BF">ggml-org · revision main · 3 GGUF files</text>
+  <rect x="140" y="484" width="152" height="24" rx="12" fill="#2A2110" stroke="#5C4A1C"/>
+  <text x="216" y="500" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="700" letter-spacing="0.7" fill="#FFC24B">LICENSE NOT DECLARED</text>
+  <text x="680" y="448" text-anchor="end" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#6F88A6">5.0 GB total</text>
+  <text x="680" y="470" text-anchor="end" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#6F88A6">verify upstream terms</text>
+
+  <text x="122" y="556" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" letter-spacing="2.6" fill="#6F88A6">GGUF FILES</text>
+
+  <rect x="116" y="568" width="588" height="110" rx="18" fill="#091421" stroke="#1B4A66"/>
+  <rect x="116" y="568" width="588" height="110" rx="18" fill="#41F0FF" opacity="0.04" filter="url(#soft)"/>
+  <rect x="136" y="586" width="38" height="38" rx="10" fill="#0B2233" stroke="#1E6A86"/>
+  <path d="M149 595h12v14h-12zM149 595l6 5 6-5" fill="none" stroke="#41F0FF" stroke-width="1.6" stroke-linejoin="round"/>
+  <text x="188" y="604" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" font-weight="700" fill="#F2F7FF">Qwen3-TTS-1.7B-Q4_K_M.gguf</text>
+  <text x="188" y="626" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#8EA4BF">1.04 GB · Q4_K_M · sha256 verified on download</text>
+  <rect x="464" y="588" width="150" height="24" rx="12" fill="#0B2233" stroke="#1E6A86"/>
+  <text x="539" y="604" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9" font-weight="700" letter-spacing="0.7" fill="#41F0FF">EXTERNAL RUNTIME</text>
+  <text x="188" y="650" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" fill="#6F88A6">llama.cpp TTS · needs the matching mmproj · not on-device in this app</text>
+  <circle cx="664" cy="612" r="18" fill="#0B2233" stroke="#1E6A86"/>
+  <path d="M664 603v13M658 611l6 6 6-6" fill="none" stroke="#41F0FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="116" y="690" width="588" height="110" rx="18" fill="#091421" stroke="#16283D"/>
+  <rect x="136" y="708" width="38" height="38" rx="10" fill="#0B1A2A" stroke="#1B3550"/>
+  <path d="M149 717h12v14h-12zM149 717l6 5 6-5" fill="none" stroke="#2FB6FF" stroke-width="1.6" stroke-linejoin="round"/>
+  <text x="188" y="726" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" font-weight="700" fill="#F2F7FF">mmproj-Qwen3-TTS-Q8_0.gguf</text>
+  <text x="188" y="748" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#8EA4BF">446 MB · Q8_0 · audio projector / codec companion</text>
+  <rect x="494" y="710" width="120" height="24" rx="12" fill="#0B1A2A" stroke="#2F7BFF"/>
+  <text x="554" y="726" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9" font-weight="700" letter-spacing="0.7" fill="#8FC2FF">COMPANION</text>
+  <text x="188" y="772" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" fill="#6F88A6">Required by llama.cpp TTS; cannot synthesize on its own</text>
+  <circle cx="664" cy="734" r="18" fill="#0B1A2A" stroke="#1B3550"/>
+  <path d="M664 725v13M658 733l6 6 6-6" fill="none" stroke="#2FB6FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="116" y="812" width="588" height="110" rx="18" fill="#091421" stroke="#16283D"/>
+  <rect x="136" y="830" width="38" height="38" rx="10" fill="#2A2110" stroke="#5C4A1C"/>
+  <path d="M149 839h12v14h-12zM149 839l6 5 6-5" fill="none" stroke="#FFC24B" stroke-width="1.6" stroke-linejoin="round"/>
+  <text x="188" y="848" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" font-weight="700" fill="#F2F7FF">Qwen3-TTS-1.7B-bf16.gguf</text>
+  <text x="188" y="870" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#8EA4BF">3.47 GB · BF16 · high memory footprint</text>
+  <rect x="494" y="832" width="120" height="24" rx="12" fill="#2A2110" stroke="#5C4A1C"/>
+  <text x="554" y="848" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9" font-weight="700" letter-spacing="0.7" fill="#FFC24B">LOW-RAM RISK</text>
+  <text x="188" y="894" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" fill="#6F88A6">Storage check runs before download; cancel and resume supported</text>
+  <circle cx="664" cy="856" r="18" fill="#0B1A2A" stroke="#1B3550"/>
+  <path d="M664 847v13M658 855l6 6 6-6" fill="none" stroke="#8EA4BF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="122" y="946" width="142" height="26" rx="13" fill="#0B2233" stroke="#1E6A86"/>
+  <circle cx="138" cy="959" r="3.5" fill="#41F0FF"/>
+  <text x="148" y="963" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#41F0FF">EXTERNAL RUNTIME</text>
+  <rect x="274" y="946" width="128" height="26" rx="13" fill="#2A2110" stroke="#5C4A1C"/>
+  <circle cx="290" cy="959" r="3.5" fill="#FFC24B"/>
+  <text x="300" y="963" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#FFC24B">NOT RUNNABLE</text>
+  <rect x="412" y="946" width="126" height="26" rx="13" fill="#0B1A2A" stroke="#1B3550"/>
+  <circle cx="428" cy="959" r="3.5" fill="#8EA4BF"/>
+  <text x="438" y="963" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="700" fill="#8EA4BF">INCOMPLETE</text>
+
+  <rect x="116" y="996" width="588" height="86" rx="18" fill="#08131F" stroke="#2F7BFF" stroke-dasharray="7 6"/>
+  <circle cx="160" cy="1039" r="18" fill="#0B2233" stroke="#2F7BFF"/>
+  <path d="M160 1029v20M150 1039h20" stroke="#41F0FF" stroke-width="2" stroke-linecap="round"/>
+  <text x="194" y="1035" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#F2F7FF">Import local .gguf</text>
+  <text x="194" y="1056" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#8EA4BF">Copy to app storage · inspect header · checksum</text>
+  <text x="680" y="1044" text-anchor="end" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#41F0FF">Browse</text>
+
+  <rect x="116" y="1098" width="588" height="156" rx="20" fill="#0B1A2A" stroke="#1B4A66"/>
+  <circle cx="160" cy="1140" r="20" fill="#0B2233" stroke="#1E6A86"/>
+  <path d="M160 1129l9 4v8c0 6-4 9-9 11-5-2-9-5-9-11v-8z" fill="none" stroke="#41F0FF" stroke-width="1.7" stroke-linejoin="round"/>
+  <path d="M155 1140l4 4 7-8" fill="none" stroke="#41F0FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="194" y="1136" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14.5" font-weight="700" fill="#F2F7FF">Container, not a runtime</text>
+  <text x="194" y="1160" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#8EA4BF">Only verified TTS architectures with the required</text>
+  <text x="194" y="1180" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#8EA4BF">codec / mmproj are marked runnable. Unsupported</text>
+  <text x="194" y="1200" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#8EA4BF">models stay importable and never produce fake audio.</text>
+  <text x="194" y="1226" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" fill="#6F88A6">Respect Hugging Face gated access, licenses and terms.</text>
+
+  <text x="122" y="1284" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" letter-spacing="2.6" fill="#6F88A6">LOCAL INVENTORY</text>
+  <rect x="116" y="1296" width="588" height="92" rx="18" fill="#091421" stroke="#16283D"/>
+  <rect x="136" y="1314" width="38" height="38" rx="10" fill="#0B1A2A" stroke="#1B3550"/>
+  <path d="M149 1323h12v14h-12zM149 1323l6 5 6-5" fill="none" stroke="#8EA4BF" stroke-width="1.6" stroke-linejoin="round"/>
+  <text x="188" y="1332" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#F2F7FF">neutts-air-Q4_0.gguf</text>
+  <text x="188" y="1352" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#8EA4BF">527 MB · Q4_0 · imported locally</text>
+  <rect x="470" y="1318" width="144" height="24" rx="12" fill="#2A2110" stroke="#5C4A1C"/>
+  <text x="542" y="1334" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="8.5" font-weight="700" letter-spacing="0.5" fill="#FFC24B">NEUCODEC REQUIRED</text>
+  <text x="188" y="1374" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" fill="#6F88A6">Not runnable in this app · no verified mobile runtime</text>
+
+  <rect x="116" y="1404" width="588" height="40" rx="12" fill="#08131F" stroke="#16283D"/>
+  <text x="140" y="1429" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#8EA4BF">Free 12.4 GB · models 1.5 GB · app-scoped storage</text>
+  <text x="680" y="1429" text-anchor="end" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#41F0FF">Manage</text>
+
+  <rect x="116" y="1480" width="588" height="142" rx="26" fill="#08101C" stroke="#16283D"/>
+  <g>
+    <rect x="164" y="1504" width="22" height="22" rx="6" fill="none" stroke="#6F88A6" stroke-width="1.8"/>
+    <path d="M171 1510l9 5-9 5z" fill="#6F88A6"/>
+    <text x="175" y="1556" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" fill="#6F88A6">Studio</text>
+    <circle cx="293" cy="1515" r="10" fill="none" stroke="#6F88A6" stroke-width="1.8"/>
+    <path d="M293 1509v6l4 3" stroke="#6F88A6" stroke-width="1.8" stroke-linecap="round"/>
+    <text x="293" y="1556" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" fill="#6F88A6">History</text>
+    <rect x="401" y="1504" width="20" height="7" rx="2" fill="none" stroke="#6F88A6" stroke-width="1.6"/>
+    <rect x="405" y="1511" width="20" height="7" rx="2" fill="none" stroke="#6F88A6" stroke-width="1.6"/>
+    <rect x="409" y="1518" width="20" height="7" rx="2" fill="none" stroke="#6F88A6" stroke-width="1.6"/>
+    <text x="410" y="1556" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" fill="#6F88A6">Models</text>
+    <path d="M527 1506l10 5v10l-10 5-10-5v-10z" fill="none" stroke="#41F0FF" stroke-width="1.8"/>
+    <circle cx="527" cy="1516" r="2.6" fill="#41F0FF"/>
+    <text x="527" y="1556" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="700" fill="#41F0FF">Hub</text>
+    <circle cx="644" cy="1515" r="7" fill="none" stroke="#6F88A6" stroke-width="1.8"/>
+    <path d="M644 1502v4M644 1524v4M631 1515h4M653 1515h4M635 1506l3 3M650 1521l3 3M653 1506l-3 3M638 1521l-3 3" stroke="#6F88A6" stroke-width="1.5" stroke-linecap="round"/>
+    <text x="644" y="1556" text-anchor="middle" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" fill="#6F88A6">Settings</text>
+  </g>
+  <rect x="356" y="1636" width="108" height="5" rx="2.5" fill="#2A3B50"/>
+</svg>
